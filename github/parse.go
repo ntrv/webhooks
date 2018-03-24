@@ -26,6 +26,34 @@ func (hook Webhook) getGitHubEvent(w http.ResponseWriter, r *http.Request) (Even
 	return Event(event), nil
 }
 
+func (hook Webhook) verifySignature(w http.ResponseWriter, r *http.Request) error {
+	// If we have a Secret set, we should check the MAC
+	if len(hook.secret) > 0 {
+		webhooks.DefaultLog.Info("Checking secret")
+		signature := r.Header.Get("X-Hub-Signature")
+		if len(signature) == 0 {
+			err := errors.New("Missing X-Hub-Signature required for HMAC verification")
+			webhooks.DefaultLog.Error(err.Error())
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return err
+		}
+		webhooks.DefaultLog.Debug(fmt.Sprintf("X-Hub-Signature:%s", signature))
+
+		mac := hmac.New(sha1.New, []byte(hook.secret))
+		mac.Write(payload)
+
+		expectedMAC := hex.EncodeToString(mac.Sum(nil))
+
+		if !hmac.Equal([]byte(signature[5:]), []byte(expectedMAC)) {
+			err := errors.New("HMAC verification failed")
+			webhooks.DefaultLog.Error(err.Error())
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return err
+		}
+	}
+	return nil
+}
+
 // ParsePayload parses and verifies the payload and fires off the mapped function, if it exists.
 func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	gitHubEvent, err := getGitHubEvent(w, r)
@@ -49,27 +77,9 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	}
 	webhooks.DefaultLog.Debug(fmt.Sprintf("Payload:%s", string(payload)))
 
-	// If we have a Secret set, we should check the MAC
-	if len(hook.secret) > 0 {
-		webhooks.DefaultLog.Info("Checking secret")
-		signature := r.Header.Get("X-Hub-Signature")
-		if len(signature) == 0 {
-			webhooks.DefaultLog.Error("Missing X-Hub-Signature required for HMAC verification")
-			http.Error(w, "403 Forbidden - Missing X-Hub-Signature required for HMAC verification", http.StatusForbidden)
-			return
-		}
-		webhooks.DefaultLog.Debug(fmt.Sprintf("X-Hub-Signature:%s", signature))
-
-		mac := hmac.New(sha1.New, []byte(hook.secret))
-		mac.Write(payload)
-
-		expectedMAC := hex.EncodeToString(mac.Sum(nil))
-
-		if !hmac.Equal([]byte(signature[5:]), []byte(expectedMAC)) {
-			webhooks.DefaultLog.Error("HMAC verification failed")
-			http.Error(w, "403 Forbidden - HMAC verification failed", http.StatusForbidden)
-			return
-		}
+	if err := verifySignature(w, r); err != nil {
+		Webhook.DefaultLog.Debug(err.Error())
+		return
 	}
 
 	// Make headers available to ProcessPayloadFunc as a webhooks type
