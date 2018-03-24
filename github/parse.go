@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,19 +13,26 @@ import (
 	"github.com/ntrv/webhooks"
 )
 
-// ParsePayload parses and verifies the payload and fires off the mapped function, if it exists.
-func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
+func (hook Webhook) getGitHubEvent(w http.ResponseWriter, r *http.Request) (Event, error) {
 	webhooks.DefaultLog.Info("Parsing Payload...")
 
 	event := r.Header.Get("X-GitHub-Event")
 	if len(event) == 0 {
-		webhooks.DefaultLog.Error("Missing X-GitHub-Event Header")
-		http.Error(w, "400 Bad Request - Missing X-GitHub-Event Header", http.StatusBadRequest)
-		return
+		err := errors.New("Missing X-GitHub-Event Header")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return nil, err
 	}
 	webhooks.DefaultLog.Debug(fmt.Sprintf("X-GitHub-Event:%s", event))
+	return Event(event), nil
+}
 
-	gitHubEvent := Event(event)
+// ParsePayload parses and verifies the payload and fires off the mapped function, if it exists.
+func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
+	gitHubEvent, err := getGitHubEvent(w, r)
+	if err != nil {
+		webhooks.DefaultLog.Error(err.Error())
+		return
+	}
 
 	fn, ok := hook.eventFuncs[gitHubEvent]
 	// if no event registered
