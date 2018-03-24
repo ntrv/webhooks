@@ -54,6 +54,18 @@ func (hook Webhook) verifySignature(w http.ResponseWriter, r *http.Request) erro
 	return nil
 }
 
+func (hook Webhook) readPayload(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	payload, err := ioutil.ReadAll(r.Body)
+	if err != nil || len(payload) == 0 {
+		err := errors.New("Issue reading Payload")
+		webhooks.DefaultLog.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nil, err
+	}
+	webhooks.DefaultLog.Debug(fmt.Sprintf("Payload:%s", string(payload)))
+	return payload, nil
+}
+
 // ParsePayload parses and verifies the payload and fires off the mapped function, if it exists.
 func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	gitHubEvent, err := getGitHubEvent(w, r)
@@ -65,19 +77,17 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	fn, ok := hook.eventFuncs[gitHubEvent]
 	// if no event registered
 	if !ok {
-		webhooks.DefaultLog.Info(fmt.Sprintf("Webhook Event %s not registered, it is recommended to setup only events in github that will be registered in the webhook to avoid unnecessary traffic and reduce potential attack vectors.", event))
+		webhooks.DefaultLog.Info(fmt.Sprintf("Webhook Event %s not registered, it is recommended to setup only events in github that will be registered in the webhook to avoid unnecessary traffic and reduce potential attack vectors.", string(gitHubEvent)))
 		return
 	}
-
-	payload, err := ioutil.ReadAll(r.Body)
-	if err != nil || len(payload) == 0 {
-		webhooks.DefaultLog.Error("Issue reading Payload")
-		http.Error(w, "Issue reading Payload", http.StatusInternalServerError)
-		return
-	}
-	webhooks.DefaultLog.Debug(fmt.Sprintf("Payload:%s", string(payload)))
 
 	if err := verifySignature(w, r); err != nil {
+		Webhook.DefaultLog.Debug(err.Error())
+		return
+	}
+
+	payload, err := readPayload(w, r)
+	if err != nil {
 		Webhook.DefaultLog.Debug(err.Error())
 		return
 	}
