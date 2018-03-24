@@ -66,6 +66,15 @@ func (hook Webhook) readPayload(w http.ResponseWriter, r *http.Request) ([]byte,
 	return payload, nil
 }
 
+func getGitHubHandler(event Event) (webhooks.ProcessPayloadFunc, error) {
+	fn, ok := hook.eventFuncs[event]
+	// if no event registered
+	if !ok {
+		return nil, fmt.Errorf("Webhook Event %s not registered, it is recommended to setup only events in github that will be registered in the webhook to avoid unnecessary traffic and reduce potential attack vectors.", string(event))
+	}
+	return fn, nil
+}
+
 // ParsePayload parses and verifies the payload and fires off the mapped function, if it exists.
 func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	gitHubEvent, err := getGitHubEvent(w, r)
@@ -74,10 +83,9 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fn, ok := hook.eventFuncs[gitHubEvent]
-	// if no event registered
-	if !ok {
-		webhooks.DefaultLog.Info(fmt.Sprintf("Webhook Event %s not registered, it is recommended to setup only events in github that will be registered in the webhook to avoid unnecessary traffic and reduce potential attack vectors.", string(gitHubEvent)))
+	fn, err := getGitHubHandler(gitHubEvent)
+	if err != nil {
+		webhooks.DefaultLog.Error(err.Error())
 		return
 	}
 
