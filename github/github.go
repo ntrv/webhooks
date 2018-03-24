@@ -285,8 +285,10 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (hook Webhook) runProcessPayloadFunc(fn webhooks.ProcessPayloadFunc, results interface{}, header webhooks.Header) {
-	go func(fn webhooks.ProcessPayloadFunc, results interface{}, header webhooks.Header) {
-		fn(results, header)
-	}(fn, results, header)
+func (hook Webhook) runProcessPayloadFunc(
+		fn webhooks.ProcessPayloadFunc,
+		results interface{},
+		header webhooks.Header,
+	) {
+	fn(results, header)
 }
