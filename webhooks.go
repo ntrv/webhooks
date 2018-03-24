@@ -44,7 +44,7 @@ type server struct {
 }
 
 // ProcessPayloadFunc is a common function for payload return values
-type ProcessPayloadFunc func(payload interface{}, header Header, w *http.ResponseWriter)
+type ProcessPayloadFunc func(payload interface{}, header Header, w http.ResponseWriter)
 
 // Handler returns the webhook http.Handler for use in your own Mux implementation
 func Handler(hook Webhook) http.Handler {
