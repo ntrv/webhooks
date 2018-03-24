@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"gopkg.in/go-playground/webhooks.v3"
+	"github.com/ntrv/webhooks"
 )
 
 // Webhook instance contains all methods needed to process events
@@ -286,10 +286,10 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hook Webhook) runProcessPayloadFunc(
-		fn webhooks.ProcessPayloadFunc,
-		results interface{},
-		header webhooks.Header,
-		w *http.ResponseWriter,
-	) {
+	fn webhooks.ProcessPayloadFunc,
+	results interface{},
+	header webhooks.Header,
+	w *http.ResponseWriter,
+) {
 	fn(results, header, w)
 }

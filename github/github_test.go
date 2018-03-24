@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ntrv/webhooks"
 	. "gopkg.in/go-playground/assert.v1"
-	"gopkg.in/go-playground/webhooks.v3"
 )
 
 // NOTES:
