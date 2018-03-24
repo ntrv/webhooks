@@ -157,131 +157,131 @@ func (hook Webhook) ParsePayload(w http.ResponseWriter, r *http.Request) {
 	case CommitCommentEvent:
 		var cc CommitCommentPayload
 		json.Unmarshal([]byte(payload), &cc)
-		hook.runProcessPayloadFunc(fn, cc, hd)
+		hook.runProcessPayloadFunc(fn, cc, hd, &w)
 	case CreateEvent:
 		var c CreatePayload
 		json.Unmarshal([]byte(payload), &c)
-		hook.runProcessPayloadFunc(fn, c, hd)
+		hook.runProcessPayloadFunc(fn, c, hd, &w)
 	case DeleteEvent:
 		var d DeletePayload
 		json.Unmarshal([]byte(payload), &d)
-		hook.runProcessPayloadFunc(fn, d, hd)
+		hook.runProcessPayloadFunc(fn, d, hd, &w)
 	case DeploymentEvent:
 		var d DeploymentPayload
 		json.Unmarshal([]byte(payload), &d)
-		hook.runProcessPayloadFunc(fn, d, hd)
+		hook.runProcessPayloadFunc(fn, d, hd, &w)
 	case DeploymentStatusEvent:
 		var d DeploymentStatusPayload
 		json.Unmarshal([]byte(payload), &d)
-		hook.runProcessPayloadFunc(fn, d, hd)
+		hook.runProcessPayloadFunc(fn, d, hd, &w)
 	case ForkEvent:
 		var f ForkPayload
 		json.Unmarshal([]byte(payload), &f)
-		hook.runProcessPayloadFunc(fn, f, hd)
+		hook.runProcessPayloadFunc(fn, f, hd, &w)
 	case GollumEvent:
 		var g GollumPayload
 		json.Unmarshal([]byte(payload), &g)
-		hook.runProcessPayloadFunc(fn, g, hd)
+		hook.runProcessPayloadFunc(fn, g, hd, &w)
 	case InstallationEvent, IntegrationInstallationEvent:
 		var i InstallationPayload
 		json.Unmarshal([]byte(payload), &i)
-		hook.runProcessPayloadFunc(fn, i, hd)
+		hook.runProcessPayloadFunc(fn, i, hd, &w)
 	case IssueCommentEvent:
 		var i IssueCommentPayload
 		json.Unmarshal([]byte(payload), &i)
-		hook.runProcessPayloadFunc(fn, i, hd)
+		hook.runProcessPayloadFunc(fn, i, hd, &w)
 	case IssuesEvent:
 		var i IssuesPayload
 		json.Unmarshal([]byte(payload), &i)
-		hook.runProcessPayloadFunc(fn, i, hd)
+		hook.runProcessPayloadFunc(fn, i, hd, &w)
 	case LabelEvent:
 		var l LabelPayload
 		json.Unmarshal([]byte(payload), &l)
-		hook.runProcessPayloadFunc(fn, l, hd)
+		hook.runProcessPayloadFunc(fn, l, hd, &w)
 	case MemberEvent:
 		var m MemberPayload
 		json.Unmarshal([]byte(payload), &m)
-		hook.runProcessPayloadFunc(fn, m, hd)
+		hook.runProcessPayloadFunc(fn, m, hd, &w)
 	case MembershipEvent:
 		var m MembershipPayload
 		json.Unmarshal([]byte(payload), &m)
-		hook.runProcessPayloadFunc(fn, m, hd)
+		hook.runProcessPayloadFunc(fn, m, hd, &w)
 	case MilestoneEvent:
 		var m MilestonePayload
 		json.Unmarshal([]byte(payload), &m)
-		hook.runProcessPayloadFunc(fn, m, hd)
+		hook.runProcessPayloadFunc(fn, m, hd, &w)
 	case OrganizationEvent:
 		var o OrganizationPayload
 		json.Unmarshal([]byte(payload), &o)
-		hook.runProcessPayloadFunc(fn, o, hd)
+		hook.runProcessPayloadFunc(fn, o, hd, &w)
 	case OrgBlockEvent:
 		var o OrgBlockPayload
 		json.Unmarshal([]byte(payload), &o)
-		hook.runProcessPayloadFunc(fn, o, hd)
+		hook.runProcessPayloadFunc(fn, o, hd, &w)
 	case PageBuildEvent:
 		var p PageBuildPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case PingEvent:
 		var p PingPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case ProjectCardEvent:
 		var p ProjectCardPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case ProjectColumnEvent:
 		var p ProjectColumnPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case ProjectEvent:
 		var p ProjectPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case PublicEvent:
 		var p PublicPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case PullRequestEvent:
 		var p PullRequestPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case PullRequestReviewEvent:
 		var p PullRequestReviewPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case PullRequestReviewCommentEvent:
 		var p PullRequestReviewCommentPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case PushEvent:
 		var p PushPayload
 		json.Unmarshal([]byte(payload), &p)
-		hook.runProcessPayloadFunc(fn, p, hd)
+		hook.runProcessPayloadFunc(fn, p, hd, &w)
 	case ReleaseEvent:
 		var r ReleasePayload
 		json.Unmarshal([]byte(payload), &r)
-		hook.runProcessPayloadFunc(fn, r, hd)
+		hook.runProcessPayloadFunc(fn, r, hd, &w)
 	case RepositoryEvent:
 		var r RepositoryPayload
 		json.Unmarshal([]byte(payload), &r)
-		hook.runProcessPayloadFunc(fn, r, hd)
+		hook.runProcessPayloadFunc(fn, r, hd, &w)
 	case StatusEvent:
 		var s StatusPayload
 		json.Unmarshal([]byte(payload), &s)
-		hook.runProcessPayloadFunc(fn, s, hd)
+		hook.runProcessPayloadFunc(fn, s, hd, &w)
 	case TeamEvent:
 		var t TeamPayload
 		json.Unmarshal([]byte(payload), &t)
-		hook.runProcessPayloadFunc(fn, t, hd)
+		hook.runProcessPayloadFunc(fn, t, hd, &w)
 	case TeamAddEvent:
 		var t TeamAddPayload
 		json.Unmarshal([]byte(payload), &t)
-		hook.runProcessPayloadFunc(fn, t, hd)
+		hook.runProcessPayloadFunc(fn, t, hd, &w)
 	case WatchEvent:
-		var w WatchPayload
-		json.Unmarshal([]byte(payload), &w)
-		hook.runProcessPayloadFunc(fn, w, hd)
+		var wt WatchPayload
+		json.Unmarshal([]byte(payload), &wt)
+		hook.runProcessPayloadFunc(fn, wt, hd, &w)
 	}
 }
 
@@ -289,6 +289,7 @@ func (hook Webhook) runProcessPayloadFunc(
 		fn webhooks.ProcessPayloadFunc,
 		results interface{},
 		header webhooks.Header,
+		w *http.ResponseWriter,
 	) {
-	fn(results, header)
+	fn(results, header, w)
 }
